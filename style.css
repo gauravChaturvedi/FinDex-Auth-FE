@@ -1,0 +1,106 @@
+
+#weightsBar {
+  flex: 1;
+  overflow: scroll;
+}
+
+.all-categories-container {
+  padding: 10%;
+}
+
+.category-container {
+  display: flex;
+  align-items: center;
+}
+
+.sub-categories-container {
+  margin-top: 10%;
+  display: flex;
+  flex-direction: column;
+  padding-left: 10%;
+}
+
+.sub-categories-container input {
+  height: 25px;
+  font-size: small;
+}
+
+.category-checkbox {
+  flex: 3;
+}
+
+.category-weight {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.category-weight input {
+  text-align: center;
+  padding: 0;
+}
+
+.percentage-label {
+  /*margin-left:-20px;*/
+}
+
+.subcategory-container {
+  display: flex;
+  align-items: center;
+  font-size: smaller;
+  margin-top: 5%;
+}
+
+.calculate-button-container {
+  justify-content: center;
+  display: flex;
+}
+
+#categoryErrorMessage {
+  margin: 0;
+}
+
+#subCategoryErrorMessage {
+  margin: 0;
+}
+
+#tableContainer {
+  overflow: scroll;
+}
+
+
+.button-container {
+  display: flex;
+}
+
+.button-container div {
+  flex: 1;
+}
+
+
+.btn-margin {
+  margin-top: 7px
+}
+
+.navbar-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+#findex-logo-container {
+  flex: 2;
+}
+
+#loginStatus {
+  margin: auto;
+}
+
+#login-controls-container {
+  display: flex;
+  flex: 1;
+}
+
+#login-view {
+  display: none;
+}

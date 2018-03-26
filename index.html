@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<!--   <link rel="icon" type="image/jpg" href="favicon.png"> -->
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <title>FinDex</title>
+
+  <script src="https://cdn.auth0.com/js/auth0/9.3.1/auth0.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <nav class="navbar navbar-default" id="headerBar">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <div id="findex-logo-container">
+          <a class="navbar-brand" href="#">
+            FinDex
+          </a>
+        </div>
+        <div id="login-controls-container">
+          <h4 id="loginStatus"></div>
+          <button id="qsLoginBtn" class="btn btn-primary btn-margin">
+              Log In
+          </button>
+          <button id="qsLogoutBtn" class="btn btn-primary btn-margin">
+              Log Out
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- City Details Modal -->
+  <div class="modal fade" id="city-details-modal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="city-details-modal-title">Modal title
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </h5>
+        </div>
+        <div class="modal-body">
+          <table id="percentile-table" class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Category</th>
+                <th scope="col">Percentile</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Error Modal -->
+  <div class="modal fade" id="apiErrorModal" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Category Eror Modal content-->
+      <div class="modal-content">
+        <div id="categoryErrorMessage" class="alert alert-danger">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <strong>Error!</strong> Unable to fetch data, If you are not logged in, please do so. Else, please refresh or contact admin.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="categoryErrorModal" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Category Eror Modal content-->
+      <div class="modal-content">
+        <div id="categoryErrorMessage" class="alert alert-danger">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <strong>Error!</strong> Sum of category weights is not 100
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="subCategoryErrorModal" role="dialog">
+    <div class="modal-dialog">
+      <!-- SubCategory Error Modal content-->
+      <div class="modal-content">
+        <div id="subCategoryErrorMessage" class="alert alert-danger">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <strong>Error!</strong> Sum of subcategory weights is not 100 <span id="subCategoryErrorPlaceholder"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex;">
+    <div class="navbar navbar-default" id="weightsBar">
+      <!-- ENVIRONMENT -->
+      <div class="all-categories-container">
+        <div class="category-container">
+          <div class="category-checkbox">
+            <input type="checkbox" checked  name="environment" id="firstCategoryCheckBox" aria-label="..."> <label for="firstCategoryCheckBox">Environmental</label>
+          </div>
+          <div class="category-weight">
+            <input type="text" id="environment" pattern="[0-100]" onchange="categoryWeightUpdated('environment', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+          </div>
+        </div>
+        <div id="first-category-container" class="sub-categories-container">
+          <div class="subcategory-container">
+            <div class="category-checkbox">
+              <label>VC Funding ($)</label>
+            </div>
+            <div class="category-weight">
+              <input type="text" id="vcDealAmt" pattern="[0-100]" onchange="subCategoryWeightUpdated('vcDealAmt', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+            </div>
+          </div>
+          <div class="subcategory-container">
+            <div class="category-checkbox">
+              <label>Unicorns (#)</label>
+            </div>
+            <div class="category-weight">
+              <input type="text" id="nOfUnicorns" pattern="[0-100]" onchange="subCategoryWeightUpdated('nOfUnicorns', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+            </div>
+          </div>
+          <div class="subcategory-container">
+            <div class="category-checkbox">
+              <label>Innovation </label>
+            </div>
+            <div class="category-weight">
+              <input type="text" id="innovRanking" pattern="[0-100]" onchange="subCategoryWeightUpdated('innovRanking', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+            </div>
+          </div>
+          <div class="subcategory-container">
+            <div class="category-checkbox">
+              <label>Number of FinTech Startups</label>
+            </div>
+            <div class="category-weight">
+              <input type="text" id="noOfFinTechStartups" pattern="[0-100]" onchange="subCategoryWeightUpdated('noOfFinTechStartups', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+            </div>
+          </div>
+          <div class="subcategory-container">
+            <div class="category-checkbox">
+              <label>Household Internet Access (%)</label>
+            </div>
+            <div class="category-weight">
+              <input type="text" id="intAccess" pattern="[0-100]" onchange="subCategoryWeightUpdated('intAccess', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+            </div>
+          </div>
+          <!-- <div class="subcategory-container">
+            <div class="category-checkbox">
+              <label>Wifi (% of time spent connected to wifi networks)</label>
+            </div>
+            <div class="category-weight">
+              <input type="text" id="wifiPercent" pattern="[0-100]" onchange="subCategoryWeightUpdated('wifiPercent', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+            </div>
+          </div> -->
+        </div>
+      </div>
+      <!-- ENVIRONMENT END-->
+
+      <!-- ECONOMIC -->
+      <div class="all-categories-container">
+        <div class="category-container">
+          <div class="category-checkbox">
+            <input type="checkbox" checked name="economic" id="fourthCategoryCheckBox" aria-label="..."> <label for="fourthCategoryCheckBox">Economic</label>
+          </div>
+          <div class="category-weight">
+            <input type="text" id="economic" pattern="[0-100]" onchange="categoryWeightUpdated('economic', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+          </div>
+        </div>
+        <div id="fourth-category-container" class="sub-categories-container">
+          <div class="subcategory-container">
+            <div class="category-checkbox">
+              <label>New FinTech Jobs (Projected #)</label>
+            </div>
+            <div class="category-weight">
+              <input type="text" id="finTechJobCount" pattern="[0-100]" onchange="subCategoryWeightUpdated('finTechJobCount', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+            </div>
+          </div>
+          <div class="subcategory-container">
+            <div class="category-checkbox">
+              <label>Global Financial Center (Y/N)</label>
+            </div>
+            <div class="category-weight">
+              <input type="text" id="gfci" pattern="[0-100]" onchange="subCategoryWeightUpdated('gfci', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ECONOMIC END-->
+
+      <!-- SOCIAL -->
+      <div class="all-categories-container">
+        <div class="category-container">
+          <div class="category-checkbox">
+            <input type="checkbox" checked name="social" id="secondCategoryCheckBox" aria-label="..."> <label for="secondCategoryCheckBox">Social</label>
+          </div>
+          <div class="category-weight">
+            <input type="text" id="social" pattern="[0-100]" onchange="categoryWeightUpdated('social', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+          </div>
+        </div>
+        <div id="second-category-container" class="sub-categories-container">
+          <div class="subcategory-container">
+            <div class="category-checkbox">
+              <label>Tech Jobs Growth Rate (Historical)</label>
+            </div>
+            <div class="category-weight">
+              <input type="text" id="techJobGrowth" pattern="[0-100]" onchange="subCategoryWeightUpdated('techJobGrowth', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+            </div>
+          </div>
+          <div class="subcategory-container">
+            <div class="category-checkbox">
+              <label>Livability</label>
+            </div>
+            <div class="category-weight">
+              <input type="text" id="livableCities" pattern="[0-100]" onchange="subCategoryWeightUpdated('livableCities', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- SOCIAL END -->
+
+      <!-- POLITICAL -->
+      <div class="all-categories-container">
+        <div class="category-container">
+          <div class="category-checkbox">
+            <input type="checkbox" checked  name="political" id="thirdCategoryCheckBox" aria-label="..."> <label for="thirdCategoryCheckBox">Political</label>
+          </div>
+          <div class="category-weight">
+            <input type="text" id="political" pattern="[0-100]" onchange="categoryWeightUpdated('political', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+          </div>
+        </div>
+        <div id="third-category-container" class="sub-categories-container">
+          <div class="subcategory-container">
+            <div class="category-checkbox">
+              <label>Corporate Tax Rate</label>
+            </div>
+            <div class="category-weight">
+              <input type="text" id="taxRate" pattern="[0-100]" onchange="subCategoryWeightUpdated('taxRate', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+            </div>
+          </div>
+          <div class="subcategory-container">
+            <div class="category-checkbox">
+              <label>Digital Currency Regulation</label>
+            </div>
+            <div class="category-weight">
+              <input type="text" id="taxIncentives" pattern="[0-100]" onchange="subCategoryWeightUpdated('taxIncentives', this);" class="form-control" placeholder="0" aria-describedby="sizing-addon2"><span class="percentage-label">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- POLITICAL END-->
+
+      <!-- CALCULATE & RESET BUTTONS-->
+      <div class="button-container">
+        <div class="calculate-button-container">
+          <button type="button" id="calcRankingsBtn" class="btn btn-primary">Calculate</button>
+        </div>
+        <div class="calculate-button-container">
+          <button type="button" id="restoreDefaultsBtn" class="btn btn-primary">Reset</button>
+        </div>
+      </div>
+      <!-- CALCULATE BUTTON END-->
+
+    </div>
+
+    <div class="container" id="tableContainer" style="flex: 3;">
+      <h4></h4>
+      <table id="rankingsTable" class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">Metropolitan</th>
+            <th scope="col">Score</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="app.js"></script>
+</body>
+</html>

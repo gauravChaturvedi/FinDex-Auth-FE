@@ -1,0 +1,16 @@
+{
+  "name": "FinDexDashboard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "serve -p 8080"
+  },
+  "author": "Gaurav Chaturvedi",
+  "license": "",
+  "dependencies": {
+    "auth0-js": "^9.0.0",
+    "bootstrap": "^3.3.7",
+    "serve": "^5.1.5"
+  }
+}
