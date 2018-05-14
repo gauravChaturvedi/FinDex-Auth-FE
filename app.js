@@ -159,11 +159,12 @@ window.addEventListener('load', function() {
     sCW[id] = (parseFloat(newValue) || 0);
   }
 
+// url: "https://findex-data-findex-data.193b.starter-ca-central-1.openshiftapps.com/getData",
   function getData() {
     $.ajax({
         type: "GET",
         headers: { 'Authorization': 'Bearer ' + localStorage.getItem('id_token') },
-        url: "https://findex-data-findex-data.193b.starter-ca-central-1.openshiftapps.com/getData",
+        url: "http://ec2-52-201-230-160.compute-1.amazonaws.com:8080/getData",
         success: function(data) {
           mainData = data;
           generateTable();
@@ -183,11 +184,12 @@ window.addEventListener('load', function() {
   // });
   }
 
+// url: "https://findex-data-findex-data.193b.starter-ca-central-1.openshiftapps.com/getPercentileData",
   function getPercentileData() {
     $.ajax({
         type: "GET",
         headers: { 'Authorization': 'Bearer ' + localStorage.getItem('id_token') },
-        url: "https://findex-data-findex-data.193b.starter-ca-central-1.openshiftapps.com/getPercentileData",
+        url: "http://ec2-52-201-230-160.compute-1.amazonaws.com:8080/getPercentileData",
         success: function(data) {
           percentileData = data;
         },
